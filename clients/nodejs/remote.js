@@ -35,7 +35,7 @@ if (argv.user) {
     rl.question(`Password for ${user}: `, (pw) => {
         password = pw;
         rl.close();
-        console.log(""); // Add newline
+        console.log(''); // Add newline
         main(argv._);
     });
     mutableStdout.muted = true;
@@ -69,7 +69,8 @@ function jsonRpcFetch(method, ...params) {
                 return;
             }
             if (res.statusCode !== 200) {
-                fail(new Error(`Request Failed. Status Code: ${res.statusCode}`));
+                fail(new Error(`Request Failed. ${res.statusMessage? `${res.statusMessage} - `
+                    : ''}Status Code: ${res.statusCode}`));
                 res.resume();
                 return;
             }
