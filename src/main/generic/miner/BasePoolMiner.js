@@ -90,7 +90,7 @@ class BasePoolMiner extends Miner {
     }
 
     _onError(ws, e) {
-        Log.d(BasePoolMiner, `WebSocket connection errored ${JSON.stringify(e)}`);
+        Log.d(BasePoolMiner, () => `WebSocket connection errored: ${e.message || JSON.stringify(e)}`);
         if (ws === this._ws) {
             this._timeoutReconnect();
         }
@@ -102,7 +102,6 @@ class BasePoolMiner extends Miner {
     }
 
     _onClose(ws, e) {
-        Log.d(BasePoolMiner, `WebSocket connection closed ${JSON.stringify(e)}`);
         if (ws === this._ws) {
             this._changeConnectionState(BasePoolMiner.ConnectionState.CLOSED);
             Log.w(BasePoolMiner, 'Disconnected from pool');
@@ -113,7 +112,9 @@ class BasePoolMiner extends Miner {
     _timeoutReconnect() {
         this.disconnect();
         this._reconnectTimeout = setTimeout(() => {
-            this.connect(this._host, this._port);
+            if (!this._ws) {
+                this.connect(this._host, this._port);
+            }
         }, this._exponentialBackoffReconnect);
         this._exponentialBackoffReconnect = Math.min(this._exponentialBackoffReconnect * 2, BasePoolMiner.RECONNECT_TIMEOUT_MAX);
     }
